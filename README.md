@@ -15,6 +15,8 @@ King of the Region is a OSRS competitiion where teams gain experience and kill b
 
 This project will automatically scrape the OSRS Hiscsores and perform some data manipulation/analysis to keep track of scores.
 
+Experience and boss kills are scaled by EHP so every category is weighted evenly.
+
 Currently working on the overall format of the competition schema.
 
 Eventually I will be working on integrating the data into a dashboard framework that can handle scheduled data updates.
