@@ -87,7 +87,7 @@ region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupt
                "Asgarnia": ["Hunter EXP", "Kree'Arra", "General Graardor", "K'ril Tsutsaroth", "Nex", "Commander Zilyana"]}
 
 individual_ehp = KOTR_update.calc_individual_ehp(delta_df, ehp_df)
-individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_dict)
+individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_dict, ehp_df)
 team_region_ehp = individual_region_ehp.groupby(by = "Team").sum().transpose()
 overall_score = KOTR_update.calc_overall_score(team_region_ehp)
 

@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import requests
 
-path = "D:/Brandon Loesch/KOTR/KOTR/"
-ehp_df = pd.read_pickle(f"{path}EHP.pkl")
+# path = "D:/Brandon Loesch/KOTR/KOTR/"
+# ehp_df = pd.read_pickle(f"{path}EHP.pkl")
 
 def get_hiscores_data(name_list):
     # Scrapes OSRS hiscores for each player and returns a dataframe
@@ -46,7 +46,7 @@ def calc_individual_ehp(delta_df, ehp_df):
     
     return(individual_ehp)
 
-def calc_individual_ehp_region(delta_df, region_dict):
+def calc_individual_ehp_region(delta_df, region_dict, ehp_df):
     # Generates the region ehp datafrane given the delta dataframe
     regions = ["Tirannwn", "Fremennik", "Kandarin", "Morytania", "Karamja", "Wilderness", "Zeah", "Desert", "Misthalin", "Asgarnia"]
     regions.append("Team")
