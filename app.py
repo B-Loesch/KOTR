@@ -116,18 +116,24 @@ with tab2:
     KOTR_map = update_map.update_map("D:/Brandon Loesch/KOTR", team_region_ehp)
     st.image(KOTR_map)
 
-    st.header("Team region score: ")
+    st.header("Team region score: ") #generate plots
     st.dataframe(team_region_ehp.style.background_gradient(axis = 0), width = 800)
 
-    st.header("Overall competition score: ")
+    st.header("Overall competition score: ") # generate plots
     st.dataframe(overall_score.style.background_gradient(axis = 1), width = 800)
 
 with tab3:
     st.text("This tab should show information for each team")
+    # dataframe with team members and their total hours
+    # dataframe with regions and hours - as well as hours behind first and second
 with tab4:
     st.text("This tab should show information for each team")
+    # dataframe with team members and their total hours
+    # dataframe with regions and hours - as well as hours behind first and second
 with tab5:
     st.text("This tab should show information for each team")
+    # dataframe with team members and their total hours
+    # dataframe with regions and hours - as well as hours behind first and second
 
 with tab6:
     st.text("This is the tab for individual stats.")
