@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import update_map
 import KOTR_update
+import matplotlib
 
 path = "D:/Brandon Loesch/KOTR/KOTR/"
 
