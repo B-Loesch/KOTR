@@ -19,11 +19,11 @@ comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thi
                        "Theatre of Blood: Hard Mode", "Thermonuclear Smoke Devil", "Tombs of Amascut", "Tombs of Amascut: Expert Mode",
                        "TzKal-Zuk", "TzTok-Jad", "Vardorvis", "Venenatis", "Vet'ion", "Vorkath", "Wintertodt", "Zalcano", "Zulrah"]
 
-start_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Start.csv?token=GHSAT0AAAAAACOV5CJF34IDVJZDS2O3F6VSZPXP6AQ").set_index("Username")
+start_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Start.csv?token={st.secrets.tokens.start_token}").set_index("Username")
 
-update_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Update.csv?token=GHSAT0AAAAAACOV5CJEWD2UZICAABQ66QTGZPXP6KA").drop(columns=["Time"]).set_index("Username")
+update_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Update.csv?token={st.secrets.tokens.update_token}").drop(columns=["Time"]).set_index("Username")
 
-ehp_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token=GHSAT0AAAAAACOV5CJFODAKFK6JRVWSZUJAZPXP5SA").set_index("Category")
+ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token={st.secrets.tokens.ehp_token}").set_index("Category")
 ehp_df["EHP Rate"] = ehp_df["EHP Rate"].astype(float)
 
 cols_to_add = ["Artio", "Calvarion", "Duke Sucellus", "Scurrius", "Spindel", "The Leviathan", "The Whisperer", "Vardorvis"]
