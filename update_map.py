@@ -1,4 +1,6 @@
 from PIL import Image, ImageDraw
+import requests
+from io import BytesIO
 
 team_colors = {"Semen Demons": (255,255,255),
               "Morytania Meatflaps": (100,0,100),
@@ -38,8 +40,15 @@ for txt, name in zip(txt_list, name_list):
         coordinates.append((float(x), float(y)))
     poly_dict[name] = coordinates
 
-def update_map(image_path, leaderboard):
-    image = Image.open(f"{image_path}/trailblazer.png")
+def update_map(image_url, leaderboard):
+    try:
+        response = requests.get(image_url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading image: {e}")
+        return None
+    
+    image = Image.open(BytesIO(response.content))
     draw = ImageDraw.Draw(image, 'RGBA')
     for index, row in leaderboard.iterrows():
         first = row.idxmax()

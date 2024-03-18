@@ -120,7 +120,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Overview", "Main", "Team1",
 
 with tab1:
     st.header("Welcome to King of the Region!")
-    st.image(r"D:\Brandon Loesch\KOTR\trailblazer.png")
+    st.image("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true")
 
     st.write("Point are earned by gaining the most (or second most) combined EHB/EHP in a region - 1 point is awarded to first and 0.5 points are awarded to second, third place gets nothing. EHB/EHP rates are listed below, as well as which activity belongs to each region. Carefully make sure the content you are doing will count, if an activity is not listed it will not count for this competition! The team that obtains the most points will be considered the winner of the competition.")
     
@@ -138,7 +138,7 @@ with tab1:
 with tab2:
     st.text("This tab should show the overall hiscores, region hiscores, updated maps and figures")
     team_region_ehp.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
-    KOTR_map = update_map.update_map("D:/Brandon Loesch/KOTR", team_region_ehp)
+    KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp)
     st.image(KOTR_map)
 
     st.header("Team region score: ") #generate plots
