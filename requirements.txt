@@ -1,4 +1,4 @@
 matplotlib
-PIL
+pillow
 requests
 BytesIO
