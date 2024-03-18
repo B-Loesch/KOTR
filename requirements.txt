@@ -1,4 +1,3 @@
 matplotlib
 pillow
 requests
-BytesIO
