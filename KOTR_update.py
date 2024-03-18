@@ -2,9 +2,6 @@ import pandas as pd
 import numpy as np
 import requests
 
-# path = "D:/Brandon Loesch/KOTR/KOTR/"
-# ehp_df = pd.read_pickle(f"{path}EHP.pkl")
-
 def get_hiscores_data(name_list):
     # Scrapes OSRS hiscores for each player and returns a dataframe
     # This can be used for competition initialization or for competition updates

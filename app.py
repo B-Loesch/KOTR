@@ -5,10 +5,35 @@ import KOTR_update
 
 path = "D:/Brandon Loesch/KOTR/KOTR/"
 
-start_df = pd.read_pickle(f"{path}Start.pkl")
-update_df = pd.read_pickle(f"{path}Update.pkl")
+comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thieving EXP", "Slayer EXP",
+                       "Farming EXP", "Runecrafting EXP", "Hunter EXP", "Abyssal Sire", 
+                       "Alchemical Hydra", "Artio", "Barrows Chests", "Callisto", "Calvarion", "Cerberus", 
+                       "Chambers of Xeric", "Chambers of Xeric: Challenge Mode", "Chaos Elemental", "Commander Zilyana", 
+                       "Corporeal Beast", "Dagannoth Prime", "Dagannoth Rex", "Dagannoth Supreme",
+                       "Duke Sucellus", "General Graardor", "Giant Mole", "Grotesque Guardians", 
+                       "Kalphite Queen", "King Black Dragon", "Kraken", "Kree'Arra", "K'ril Tsutsaroth", 
+                       "Nex", "Phosani's Nightmare",
+                       "Phantom Muspah", "Sarachnis", "Scorpia", "Scurrius", "Spindel", "Tempoross", 
+                       "The Corrupted Gauntlet", "The Leviathan","The Whisperer", "Theatre of Blood", 
+                       "Theatre of Blood: Hard Mode", "Thermonuclear Smoke Devil", "Tombs of Amascut", "Tombs of Amascut: Expert Mode",
+                       "TzKal-Zuk", "TzTok-Jad", "Vardorvis", "Venenatis", "Vet'ion", "Vorkath", "Wintertodt", "Zalcano", "Zulrah"]
+
+start_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Start.csv?token=GHSAT0AAAAAACOV5CJF34IDVJZDS2O3F6VSZPXP6AQ").set_index("Username")
+
+update_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Update.csv?token=GHSAT0AAAAAACOV5CJEWD2UZICAABQ66QTGZPXP6KA").drop(columns=["Time"]).set_index("Username")
+
+ehp_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token=GHSAT0AAAAAACOV5CJFODAKFK6JRVWSZUJAZPXP5SA").set_index("Category")
+ehp_df["EHP Rate"] = ehp_df["EHP Rate"].astype(float)
+
+cols_to_add = ["Artio", "Calvarion", "Duke Sucellus", "Scurrius", "Spindel", "The Leviathan", "The Whisperer", "Vardorvis"]
+for col in cols_to_add:
+    if col not in start_df:
+        start_df[col] = 0
+        update_df[col] = 0
+
+start_df = start_df[comp_cols].astype(float).replace(-1, 0)
+update_df = update_df[comp_cols].astype(float).replace(-1, 0)
 delta_df = update_df - start_df
-ehp_df = pd.read_pickle(f"{path}EHP.pkl")
 
 team1 = ["CmmandoSpork",
 "Dezerthuntar",
@@ -140,73 +165,5 @@ with tab6:
     st.dataframe(delta_df)
     st.dataframe(individual_ehp)
     st.dataframe(individual_region_ehp)
-    
-    # st.text("This table shows each participant's experience or kills for each category.")
-    # st.dataframe(delta_df)
-
-    # individual_ehp = pd.DataFrame(0, columns=delta_df.columns.tolist(), index = delta_df.index.tolist())
-    # def calc_individual_ehp(cat):
-    #     if cat == "Team":
-    #         return(delta_df[cat])
-    #     else:
-    #         return(delta_df[cat] / ehp_df.at[cat, "EHP Rate"])
-        
-    # for cat in delta_df.columns.tolist():
-    #     individual_ehp[cat] = calc_individual_ehp(cat)
-
-    # st.text("This table shows each participant's ehp for each category.")
-    # st.dataframe(individual_ehp)
-
-    # regions = list(region_dict.keys())
-    # regions.append("Team")
-    # region_leaderboard_individual = pd.DataFrame(0, columns = delta_df.index.tolist(), index = regions)
-
-    # def calc_region_ehp_individual(name):
-    #     # Takes a teams' delta dataframe and returns a dictionary:
-    #     # Keys are the region and values are the total ehp in that region
-    #     region_ehp_dict = {}
-    #     temp_df = delta_df.loc[name]
-    #     for region in region_dict:
-    #         region_ehp = 0
-    #         for cat in region_dict[region]:           
-    #             cat_ehp = delta_df.loc[name][cat] / ehp_df.at[cat, "EHP Rate"]
-    #             region_ehp += cat_ehp
-            
-    #         region_ehp_dict[region] = region_ehp
-            
-    #     region_ehp_dict["Team"] = delta_df.at[name, "Team"]
-        
-    #     return(region_ehp_dict)
-
-    # for name in delta_df.index.tolist():
-    #     values = calc_region_ehp_individual(name)
-    #     region_leaderboard_individual[name] = values
-    # region_leaderboard_individual_transposed = region_leaderboard_individual.transpose()
-
-    # st.text("This table shows each participant's summed ehp for each region.")
-    # st.dataframe(region_leaderboard_individual_transposed)
-
-    # region_leaderboard_team_transposed = region_leaderboard_individual_transposed.groupby(by = "Team").sum().transpose()
-    # st.text("This table shows each team's summed ehp for each region.")
-    # st.dataframe(region_leaderboard_team_transposed)
-
-    # overall_score = pd.DataFrame(0, columns=[1, 2, 3], index = ["Score"])
-    # for i in range(region_leaderboard_team_transposed.shape[0]):
-    #     max_team = region_leaderboard_team_transposed.iloc[i,:].idxmax()
-    #     min_team = region_leaderboard_team_transposed.iloc[i,:].idxmin()
-        
-    #     team_set = set(region_leaderboard_team_transposed.columns.tolist())
-    #     mid_team = (team_set - {max_team}) - {min_team}
-        
-    #     mid_team = mid_team.pop() if mid_team else None
-        
-    #     overall_score[max_team] += 1
-    #     overall_score[mid_team] += 0.5
-    # st.text("This is the overall score for the competition.")
-    # st.dataframe(overall_score)
-
-    # region_leaderboard_team_transposed.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
-    # KOTR_map = update_map.update_map("D:/Brandon Loesch/KOTR", region_leaderboard_team_transposed)
-    # st.image(KOTR_map)
 
 
