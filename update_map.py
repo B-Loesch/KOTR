@@ -54,8 +54,8 @@ def update_map(image_url, leaderboard):
         first = row.idxmax()
         second = row.drop(first).idxmax()
         
-        transparency = int(((row.max() - row.median())/row.max()) * 255)
-        transparency = min(transparency, 100)
+        # transparency = int(((row.max() - row.median())/row.max()) * 255)
+        transparency = 150
         fill_color = team_colors[first] + (transparency,)
         
         
