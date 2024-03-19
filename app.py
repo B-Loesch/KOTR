@@ -159,12 +159,13 @@ with tab2:
         selection = "All"
         selections = team_region_ehp.index.tolist()
         selections.insert(0, "All")
-        selection = st.selectbox("Which region do you want to display?", selections)
+        selection = st.selectbox("Which region do you want to display?", sorted(selections))
 
         col1, col2 = st.columns(2)
         with col1:
             if selection == "All":
-                st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 0), width = 500, height = 400)
+                team_region_ehp.loc["Total"] = team_region_ehp.sum()
+                st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 1), width = 500, height = 500)
             else: 
                 st.dataframe(team_region_ehp.loc[[selection],:].style.background_gradient(cmap = 'Blues', axis = 1), width = 500)
               
@@ -197,34 +198,28 @@ with tab3:
     st.dataframe(individual_ehp[individual_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
     st.dataframe(individual_region_ehp[individual_region_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
     st.dataframe(region_summary)
+    
 with tab4:
     st.text("This is the tab for individual stats.")
-    st.dataframe(delta_df)
-    st.dataframe(individual_ehp)
-    st.dataframe(individual_region_ehp)
+
+    individual_region_ehp["Total"] = individual_region_ehp.drop("Team", axis = 1).sum(axis = 1)
+    total_column = individual_region_ehp.pop("Total")
+    individual_region_ehp.insert(0, "Total", total_column)
+
+    with st.container(border = True):
+        st.header("EHP gained in each category.")
+        st.dataframe(individual_ehp)
+        st.header("EHP gained in each region.")
+        st.dataframe(individual_region_ehp)
+
+    with st.container(border = True):
+        st.header("Region Leaderboard")
+        names = delta_df.index.tolist()
+        names = sorted(names, key = str.casefold)
+        names.insert(0, "None")
+        name_selection = st.selectbox("Which player do you want to highlight?", names)
+        st.dataframe(KOTR_update.region_leaderboard(individual_region_ehp).style.map(lambda x: "background-color: blue" if x == name_selection else None))
+        
+
 with tab5:
     st.text("This tab is for testing purposes")
-
-    # col1, col2 = st.columns(2)
-
-    # with col1:
-    #     st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 0), width = 500, height = 400)
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.text(" ")
-    #     st.dataframe(overall_score.T.style.background_gradient(cmap = 'Blues', axis = 0), width = 400)
-    
-    # with col2:
-    #     fig = KOTR_update.region_score_plotly(team_region_ehp, width = 600, height = 400)
-    #     st.plotly_chart(fig, theme = "streamlit")
-
-    #     fig = KOTR_update.overall_score_plot(overall_score.T, width = 600, height = 400)
-    #     st.plotly_chart(fig, theme = "streamlit")
-
-
-    

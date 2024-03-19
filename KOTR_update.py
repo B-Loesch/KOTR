@@ -100,13 +100,27 @@ def team_tracking(team_region_ehp, team):
 
     return(team_data)
 
+def region_leaderboard(individual_region_ehp):
+    region_hiscores_table = pd.DataFrame(index = individual_region_ehp.index,
+                                    columns = individual_region_ehp.columns[:-1])
+    
+    for category in individual_region_ehp.columns[:-1]:
+        region_hiscores_table[category] = individual_region_ehp[category].sort_values(ascending=False).index
+    
+    region_hiscores_table.reset_index(drop=True, inplace=True)
+
+    region_hiscores_table.index += 1
+
+    return(region_hiscores_table)
+
+
 def region_score_plotly(team_region_ehp, selection, width, height):
     #Take team_region_ehp and create multi bar plot
     region_plot = go.Figure()
 
     if selection == "All":
         for i, col in enumerate(team_region_ehp.columns):
-            region_plot.add_trace(go.Bar(x=team_region_ehp.index, y=team_region_ehp[col], name=col))
+            region_plot.add_trace(go.Bar(x=team_region_ehp.index[:-1], y=team_region_ehp[col], name=col))
         region_plot.update_layout(
             xaxis=dict(title='Region', dtick = 1),
             yaxis=dict(title='EHP'),
