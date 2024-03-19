@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import update_map
 import KOTR_update
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
 
 path = "D:/Brandon Loesch/KOTR/KOTR/"
 
@@ -117,54 +120,111 @@ individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_
 team_region_ehp = individual_region_ehp.groupby(by = "Team").sum().transpose()
 overall_score = KOTR_update.calc_overall_score(team_region_ehp)
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Overview", "Main", "Team1", "Team2", "Team3", "Individual Stats", "Test"])
+st.set_page_config(layout = "wide")
+
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Overview", "Main", "Team Page", "Individual Stats", "Test"])
 
 with tab1:
     st.header("Welcome to King of the Region!")
     st.image("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true")
-
-    st.write("Point are earned by gaining the most (or second most) combined EHB/EHP in a region - 1 point is awarded to first and 0.5 points are awarded to second, third place gets nothing. EHB/EHP rates are listed below, as well as which activity belongs to each region. Carefully make sure the content you are doing will count, if an activity is not listed it will not count for this competition! The team that obtains the most points will be considered the winner of the competition.")
-    
+    with st.container(border=True):
+        st.write("Point are earned by gaining the most (or second most) combined EHB/EHP in a region - 1 point is awarded to first and 0.5 points are awarded to second, third place gets nothing. EHB/EHP rates are listed below, as well as which activity belongs to each region. Carefully make sure the content you are doing will count, if an activity is not listed it will not count for this competition! The team that obtains the most points will be considered the winner of the competition.")
+        st.write("The use of any PvM or skilling services during the competition is not permitted. The person who signs up for the competition must be the person to play the account and gain experience/KC/boss drops to be eligible to contribute. Boosting of any kind is also not permitted (eg Corp boosting/Essence running). For this competition, alts are allowed in all forms and uses. 6 hour logs are not permitted before the start of the competition. All participants will need to re-log just prior to comp start. Additionally, the following are not permitted to be used during the competition: - Pre-banked experience (including, but not limited to, brimhaven agility tickets, ores stored in blast mine, exp lamps, glistening tears etc.) - Holding chest/other rewards before comp start e.g. CoX, ToB, Corrupted Gauntlet, Wintertodt crates, Tempoross reward points, - Pre-banked clue caskets where the competition awards points for clues")
+        st.write("As a general rule of thumb, content that is meant to be counted for the competition must be done during the competition. Anyone breaking this rule will be disqualified.")
+        st.write("This dashboard will scrape the hiscores once every hour to update players' gains and update the scoring. Once the competition begins, players CAN NOT change their name.")
+        
     options = ehp_df["Region"].drop_duplicates().tolist()
     options.sort()
-    option = st.selectbox("Region Categories and EHP: ", (options))
-    st.dataframe(ehp_df[ehp_df["Region"] == option].drop(columns = ["Region"]), width = 800)
-
-    st.write("The use of any PvM or skilling services during the competition is not permitted. The person who signs up for the competition must be the person to play the account and gain experience/KC/boss drops to be eligible to contribute. Boosting of any kind is also not permitted (eg Corp boosting/Essence running). For this competition, alts are allowed in all forms and uses. 6 hour logs are not permitted before the start of the competition. All participants will need to re-log just prior to comp start. Additionally, the following are not permitted to be used during the competition: - Pre-banked experience (including, but not limited to, brimhaven agility tickets, ores stored in blast mine, exp lamps, glistening tears etc.) - Holding chest/other rewards before comp start e.g. CoX, ToB, Corrupted Gauntlet, Wintertodt crates, Tempoross reward points, - Pre-banked clue caskets where the competition awards points for clues")
-    st.write("As a general rule of thumb, content that is meant to be counted for the competition must be done during the competition. Anyone breaking this rule will be disqualified.")
-    st.write("This dashboard will scrape the hiscores once every hour to update players' gains and update the scoring. Once the competition begins, players CAN NOT change their name.")
-    
-
+    with st.container(border=True):
+        option = st.selectbox("Region Categories and EHP: ", (options))
+        st.dataframe(ehp_df[ehp_df["Region"] == option].drop(columns = ["Region"]), use_container_width=True)
     
 with tab2:
     st.text("This tab should show the overall hiscores, region hiscores, updated maps and figures")
-    team_region_ehp.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
+    # team_region_ehp.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
     KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp)
     st.image(KOTR_map)
+    
+    st.header("Overall Score")
+    with st.container(border=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            st.dataframe(overall_score.T.style.background_gradient(cmap = 'Blues', axis = 0), width = 400)
+        with col2:
+            fig = KOTR_update.overall_score_plot(overall_score.T)
+            st.plotly_chart(fig, theme = "streamlit")
 
     st.header("Team region score: ") #generate plots
-    st.dataframe(team_region_ehp.style.background_gradient(axis = 0), width = 800)
+    with st.container(height = 550, border=True):
+        selection = "All"
+        selections = team_region_ehp.index.tolist()
+        selections.insert(0, "All")
+        selection = st.selectbox("Which region do you want to display?", selections)
 
-    st.header("Overall competition score: ") # generate plots
-    st.dataframe(overall_score.style.background_gradient(axis = 1), width = 800)
+        col1, col2 = st.columns(2)
+        with col1:
+            if selection == "All":
+                st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 0), width = 500, height = 400)
+            else: 
+                st.dataframe(team_region_ehp.loc[[selection],:].style.background_gradient(cmap = 'Blues', axis = 1), width = 500)
+              
+        with col2:
+            fig = KOTR_update.region_score_plotly(team_region_ehp, selection, width = 600, height = 400)
+            st.plotly_chart(fig, theme = "streamlit")
 
 with tab3:
-    st.text("This tab should show information for each team")
-    # dataframe with team members and their total hours
-    # dataframe with regions and hours - as well as hours behind first and second
-with tab4:
-    st.text("This tab should show information for each team")
-    # dataframe with team members and their total hours
-    # dataframe with regions and hours - as well as hours behind first and second
-with tab5:
-    st.text("This tab should show information for each team")
-    # dataframe with team members and their total hours
-    # dataframe with regions and hours - as well as hours behind first and second
+    team_options = delta_df["Team"].drop_duplicates().tolist()
+    team_options.sort()
+    team_option = st.selectbox("Team: ", (team_options))
+    team_score = overall_score.at["Score", team_option]
 
-with tab6:
+    score_t = overall_score.transpose()
+    score_t = score_t.sort_values(by = "Score", ascending = False)
+    position = score_t.index.get_loc(team_option) + 1
+
+    region_summary = KOTR_update.team_tracking(team_region_ehp, team_option)
+
+    if position == 1:
+        position = "first"
+    if position == 2:
+        position = "second"
+    if position == 3:
+        position = "third"
+
+    st.header(f"Team: {team_option} is currently in {position} place with {team_score} points.")
+
+    st.dataframe(delta_df[delta_df["Team"] == team_option].drop(columns = ["Team"]), width = 800)
+    st.dataframe(individual_ehp[individual_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
+    st.dataframe(individual_region_ehp[individual_region_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
+    st.dataframe(region_summary)
+with tab4:
     st.text("This is the tab for individual stats.")
     st.dataframe(delta_df)
     st.dataframe(individual_ehp)
     st.dataframe(individual_region_ehp)
+with tab5:
+    st.text("This tab is for testing purposes")
+
+    # col1, col2 = st.columns(2)
+
+    # with col1:
+    #     st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 0), width = 500, height = 400)
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.text(" ")
+    #     st.dataframe(overall_score.T.style.background_gradient(cmap = 'Blues', axis = 0), width = 400)
+    
+    # with col2:
+    #     fig = KOTR_update.region_score_plotly(team_region_ehp, width = 600, height = 400)
+    #     st.plotly_chart(fig, theme = "streamlit")
+
+    #     fig = KOTR_update.overall_score_plot(overall_score.T, width = 600, height = 400)
+    #     st.plotly_chart(fig, theme = "streamlit")
 
 
+    

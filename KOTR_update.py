@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import requests
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
 
 def get_hiscores_data(name_list):
     # Scrapes OSRS hiscores for each player and returns a dataframe
@@ -37,7 +40,7 @@ def calc_individual_ehp(delta_df, ehp_df):
     individual_ehp = pd.DataFrame(0, columns=delta_df.columns.tolist(), index = delta_df.index.tolist())
     for cat in delta_df.columns.tolist():
         if cat == "Team":
-            individual_ehp[cat] == delta_df[cat]
+            individual_ehp[cat] = delta_df[cat]
         else:
             individual_ehp[cat] = delta_df[cat] / ehp_df.at[cat, "EHP Rate"]
     
@@ -80,3 +83,60 @@ def calc_overall_score(team_region_ehp):
         overall_score[mid_team] += 1
 
     return(overall_score)
+
+def team_tracking(team_region_ehp, team):
+    team_data = pd.DataFrame(index = team_region_ehp.index, columns = ["EHP", "Rank", "Points from first", "Points from second", "Points from third"])
+    team_data["EHP"] = team_region_ehp[team]
+    team_data["Rank"] = team_region_ehp.rank(axis = 1, ascending = False)[team]
+
+    for index, row in team_region_ehp.iterrows():
+        first_place = row.idxmax()
+        third_place = row.idxmin()
+        second_place = list({1.0, 2.0, 3.0} - {first_place, third_place})[0]
+
+        team_data.at[index, "Points from first"] = row[team] - row[first_place]
+        team_data.at[index, "Points from second"] = row[team] - row[second_place]
+        team_data.at[index, "Points from third"] = row[team] - row[third_place]
+
+    return(team_data)
+
+def region_score_plotly(team_region_ehp, selection, width, height):
+    #Take team_region_ehp and create multi bar plot
+    region_plot = go.Figure()
+
+    if selection == "All":
+        for i, col in enumerate(team_region_ehp.columns):
+            region_plot.add_trace(go.Bar(x=team_region_ehp.index, y=team_region_ehp[col], name=col))
+        region_plot.update_layout(
+            xaxis=dict(title='Region', dtick = 1),
+            yaxis=dict(title='EHP'),
+            barmode='group',
+            plot_bgcolor='black',
+            paper_bgcolor='black',
+            font=dict(color='white'),
+            margin=dict(l=40, r=40, t=10, b=40),
+            width = width,
+            height = height)
+        return(region_plot)
+    else:
+        data_slice = team_region_ehp.loc[selection]
+        region_plot.add_trace(go.Bar(x=team_region_ehp.columns, y=data_slice.values))
+        region_plot.update_layout(
+            xaxis=dict(title='Team', dtick = 1),
+            yaxis=dict(title='EHP'),
+            barmode='group',
+            plot_bgcolor='black',
+            paper_bgcolor='black',
+            font=dict(color='white'),
+            margin=dict(l=40, r=40, t=10, b=40),
+            width = width,
+            height = height)
+        return(region_plot)
+    
+    
+
+def overall_score_plot(overall_score):
+    score_plot = px.pie(overall_score, values = "Score", names = overall_score.index)
+    score_plot.update_layout(legend=dict(orientation="h",x=0.4, y=1.15))
+    return(score_plot)
+
