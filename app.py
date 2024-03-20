@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 
-path = "D:/Brandon Loesch/KOTR/KOTR/"
-
 comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thieving EXP", "Slayer EXP",
                        "Farming EXP", "Runecrafting EXP", "Hunter EXP", "Abyssal Sire", 
                        "Alchemical Hydra", "Artio", "Barrows Chests", "Callisto", "Calvarion", "Cerberus", 
@@ -27,6 +25,7 @@ start_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Da
 update_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Update.csv?token={st.secrets.tokens.update_token}").drop(columns=["Time"]).set_index("Username")
 
 ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token={st.secrets.tokens.ehp_token}").set_index("Category")
+
 ehp_df["EHP Rate"] = ehp_df["EHP Rate"].astype(float)
 
 cols_to_add = ["Artio", "Calvarion", "Duke Sucellus", "Scurrius", "Spindel", "The Leviathan", "The Whisperer", "Vardorvis"]
@@ -140,21 +139,23 @@ with tab1:
         st.dataframe(ehp_df[ehp_df["Region"] == option].drop(columns = ["Region"]), use_container_width=True)
     
 with tab2:
-    st.text("This tab should show the overall hiscores, region hiscores, updated maps and figures")
     # team_region_ehp.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
     KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp)
     st.image(KOTR_map)
     
     st.header("Overall Score")
     with st.container(border=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            st.dataframe(overall_score.T.style.background_gradient(cmap = 'Blues', axis = 0), width = 400)
-        with col2:
-            fig = KOTR_update.overall_score_plot(overall_score.T)
-            st.plotly_chart(fig, theme = "streamlit")
+        cols = st.columns(3)
+        for i in range(3):
+            col = cols[i]
+            controlled_regions = []
+            for index in team_region_ehp.index:
+                if team_region_ehp.loc[index].idxmax(axis = "index") == team_region_ehp.columns[i]:
+                    controlled_regions.append(index)
+            with col: 
+                st.metric(f":red[Team {str(overall_score.columns[i])}:]", f"{overall_score.iloc[0,i]} points", ' | '.join(controlled_regions))
 
-    st.header("Team region score: ") #generate plots
+    st.header("Team region score: ")
     with st.container(height = 550, border=True):
         selection = "All"
         selections = team_region_ehp.index.tolist()
@@ -168,7 +169,7 @@ with tab2:
                 st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 1), width = 500, height = 500)
             else: 
                 st.dataframe(team_region_ehp.loc[[selection],:].style.background_gradient(cmap = 'Blues', axis = 1), width = 500)
-              
+                st.metric(f"{selection} MVP:", f"{individual_region_ehp[selection].idxmax()} - {round(individual_region_ehp[selection].max(), 2)} EHP", f"+{round(individual_region_ehp[selection].max() - individual_region_ehp[selection].nlargest(2)[1], 2)} hours")
         with col2:
             fig = KOTR_update.region_score_plotly(team_region_ehp, selection, width = 600, height = 400)
             st.plotly_chart(fig, theme = "streamlit")
@@ -194,24 +195,27 @@ with tab3:
 
     st.header(f"Team: {team_option} is currently in {position} place with {team_score} points.")
 
-    st.dataframe(delta_df[delta_df["Team"] == team_option].drop(columns = ["Team"]), width = 800)
-    st.dataframe(individual_ehp[individual_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
-    st.dataframe(individual_region_ehp[individual_region_ehp["Team"] == team_option].drop(columns = ["Team"]), width = 800)
-    st.dataframe(region_summary)
+    team_display = st.selectbox("Which table do you want to display?", [None, "Raw gains", "EHP gains", "Region totals", "Region leaderboard"])
+
+    if team_display == None:
+        st.markdown(":frog: ribbeth")
+    if team_display == "Raw gains":
+        team_delta_df = delta_df[delta_df["Team"] == team_option].drop(columns = ["Team"])
+        team_delta_df = KOTR_update.add_total_row(team_delta_df)
+        st.dataframe(team_delta_df, height = (len(team_delta_df) + 1) * 35 + 3)
+    if team_display == "EHP gains":
+        team_ind_ehp = individual_ehp[individual_ehp["Team"] == team_option].drop(columns = ["Team"])
+        team_ind_ehp = KOTR_update.add_total_row(team_ind_ehp)
+        st.dataframe(team_ind_ehp, height = (len(team_ind_ehp) + 1) * 35 + 3)
+    if team_display == "Region totals":
+        team_ind_region_ehp = individual_region_ehp[individual_region_ehp["Team"] == team_option].drop(columns = ["Team"])
+        team_ind_region_ehp = KOTR_update.add_total_row(team_ind_region_ehp)
+        st.dataframe(team_ind_region_ehp, height = (len(team_ind_region_ehp) + 1) * 35 + 3)
+    if team_display == "Region leaderboard":
+        st.dataframe(region_summary, height = (len(region_summary) + 1) * 35 + 3)
     
 with tab4:
     st.text("This is the tab for individual stats.")
-
-    individual_region_ehp["Total"] = individual_region_ehp.drop("Team", axis = 1).sum(axis = 1)
-    total_column = individual_region_ehp.pop("Total")
-    individual_region_ehp.insert(0, "Total", total_column)
-
-    with st.container(border = True):
-        st.header("EHP gained in each category.")
-        st.dataframe(individual_ehp)
-        st.header("EHP gained in each region.")
-        st.dataframe(individual_region_ehp)
-
     with st.container(border = True):
         st.header("Region Leaderboard")
         names = delta_df.index.tolist()
@@ -219,7 +223,18 @@ with tab4:
         names.insert(0, "None")
         name_selection = st.selectbox("Which player do you want to highlight?", names)
         st.dataframe(KOTR_update.region_leaderboard(individual_region_ehp).style.map(lambda x: "background-color: blue" if x == name_selection else None))
-        
-
+    with st.container(border = True):
+        st.header("EHP gained in each region.")
+        ind_reg_ehp_total = KOTR_update.add_total_row(individual_region_ehp)
+        st.dataframe(ind_reg_ehp_total)
+    with st.container(border = True):
+        st.header("EHP gained in each category.")
+        st.dataframe(KOTR_update.add_total_row(individual_ehp))
+    
 with tab5:
     st.text("This tab is for testing purposes")
+    test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "Suitabl3", "Biscuit", "The Maher"])
+    st.dataframe(test_scrape)
+
+    
+    

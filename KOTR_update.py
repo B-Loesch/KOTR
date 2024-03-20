@@ -4,7 +4,9 @@ import requests
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
+import streamlit as st
 
+@st.cache_data(ttl=pd.Timedelta(minutes = 15))
 def get_hiscores_data(name_list):
     # Scrapes OSRS hiscores for each player and returns a dataframe
     # This can be used for competition initialization or for competition updates
@@ -113,6 +115,9 @@ def region_leaderboard(individual_region_ehp):
 
     return(region_hiscores_table)
 
+def add_total_row(df):
+    df.loc["Total"] = df.sum()
+    return df
 
 def region_score_plotly(team_region_ehp, selection, width, height):
     #Take team_region_ehp and create multi bar plot
