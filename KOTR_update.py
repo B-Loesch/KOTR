@@ -72,7 +72,7 @@ def calc_individual_ehp_region(delta_df, region_dict, ehp_df):
     return(region_leaderboard_individual.transpose())
 
 def calc_overall_score(team_region_ehp):
-    overall_score = pd.DataFrame(0, columns=[1, 2, 3], index = ["Score"])
+    overall_score = pd.DataFrame(0, columns=team_region_ehp.columns, index = ["Score"])
     for i in range(team_region_ehp.shape[0]):
         max_team = team_region_ehp.iloc[i, :].idxmax()
         min_team = team_region_ehp.iloc[i, :].idxmin()
@@ -82,7 +82,7 @@ def calc_overall_score(team_region_ehp):
         mid_team = mid_team.pop() if mid_team else None
 
         overall_score[max_team] += 1
-        overall_score[mid_team] += 1
+        overall_score[mid_team] += 0.5
 
     return(overall_score)
 
@@ -94,7 +94,7 @@ def team_tracking(team_region_ehp, team):
     for index, row in team_region_ehp.iterrows():
         first_place = row.idxmax()
         third_place = row.idxmin()
-        second_place = list({1.0, 2.0, 3.0} - {first_place, third_place})[0]
+        second_place = list({team_region_ehp.columns[0], team_region_ehp.columns[1], team_region_ehp.columns[2],} - {first_place, third_place})[0]
 
         team_data.at[index, "Points from first"] = row[team] - row[first_place]
         team_data.at[index, "Points from second"] = row[team] - row[second_place]

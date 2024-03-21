@@ -2,9 +2,10 @@ from PIL import Image, ImageDraw
 import requests
 from io import BytesIO
 
-team_colors = {1: (255,255,255),
-              2: (100,0,100),
-              3: (0,255,0)}
+#edit the team names and colors here
+team_colors = {"Semen Demons": (255,255,255),
+              "Morytania Meatflaps": (100,0,100),
+              "Guthix Gooch": (0,255,0)}
 
 poly_dict = {"Zeah": [],
             "Tirannwn": [],

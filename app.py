@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 
+team_names = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
+
+team_colors = {team_names[0]: (255,255,255),
+              team_names[1]: (100,0,100),
+              team_names[2]: (0,255,0)}
+
 comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thieving EXP", "Slayer EXP",
                        "Farming EXP", "Runecrafting EXP", "Hunter EXP", "Abyssal Sire", 
                        "Alchemical Hydra", "Artio", "Barrows Chests", "Callisto", "Calvarion", "Cerberus", 
@@ -91,15 +97,15 @@ team3 = ["The Maher",
 
 for name in start_df.index:
     if name in team1:
-        delta_df.at[name, "Team"] = 1
+        delta_df.at[name, "Team"] = team_names[0]
     elif name in team2:
-        delta_df.at[name, "Team"] = 2
+        delta_df.at[name, "Team"] = team_names[1]
     else:
-        delta_df.at[name, "Team"] = 3
+        delta_df.at[name, "Team"] = team_names[2]
 
-df_1 = delta_df[delta_df["Team"] == 1]
-df_2 = delta_df[delta_df["Team"] == 2]
-df_3 = delta_df[delta_df["Team"] == 3]
+df_1 = delta_df[delta_df["Team"] == team_names[0]]
+df_2 = delta_df[delta_df["Team"] == team_names[1]]
+df_3 = delta_df[delta_df["Team"] == team_names[2]]
 
 df_list = [df_1, df_2, df_3]
 
@@ -139,7 +145,6 @@ with tab1:
         st.dataframe(ehp_df[ehp_df["Region"] == option].drop(columns = ["Region"]), use_container_width=True)
     
 with tab2:
-    # team_region_ehp.columns = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
     KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp)
     st.image(KOTR_map)
     
@@ -169,7 +174,12 @@ with tab2:
                 st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 1), width = 500, height = 500)
             else: 
                 st.dataframe(team_region_ehp.loc[[selection],:].style.background_gradient(cmap = 'Blues', axis = 1), width = 500)
-                st.metric(f"{selection} MVP:", f"{individual_region_ehp[selection].idxmax()} - {round(individual_region_ehp[selection].max(), 2)} EHP", f"+{round(individual_region_ehp[selection].max() - individual_region_ehp[selection].nlargest(2)[1], 2)} hours")
+
+                maxes = individual_region_ehp[selection].max()
+                less_than_max = individual_region_ehp[selection].where(individual_region_ehp[selection].lt(maxes, axis='rows'))
+                seconds = less_than_max.max()
+
+                st.metric(f"{selection} MVP:", f"{individual_region_ehp[selection].idxmax()} - {round(individual_region_ehp[selection].max(), 2)} EHP", f"{round(maxes - seconds, 2)} hours")
         with col2:
             fig = KOTR_update.region_score_plotly(team_region_ehp, selection, width = 600, height = 400)
             st.plotly_chart(fig, theme = "streamlit")
@@ -193,7 +203,7 @@ with tab3:
     if position == 3:
         position = "third"
 
-    st.header(f"Team: {team_option} is currently in {position} place with {team_score} points.")
+    st.header(f"{team_option} is currently in {position} place with {team_score} points.")
 
     team_display = st.selectbox("Which table do you want to display?", [None, "Raw gains", "EHP gains", "Region totals", "Region leaderboard"])
 
@@ -233,8 +243,9 @@ with tab4:
     
 with tab5:
     st.text("This tab is for testing purposes")
-    test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "Suitabl3", "Biscuit", "The Maher"])
-    st.dataframe(test_scrape)
+    # test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "Suitabl3", "Biscuit", "The Maher"])
+    # st.dataframe(test_scrape)
+    
 
     
     
