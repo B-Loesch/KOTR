@@ -143,11 +143,12 @@ def region_score_plotly(team_region_ehp, selection, team_colors, width, height):
         return(region_plot)
     else:
         data_slice = team_region_ehp.loc[selection]
-        for col, color in team_colors.items():
+        for i, col in enumerate(team_region_ehp.columns.tolist()):
+            team_color = team_colors.get(col) 
             region_plot.add_trace(go.Bar(
                 x=[col],
                 y=[data_slice[col]],
-                marker_color=color,
+                marker_color=team_color,
                 name=col))
         region_plot.update_layout(
             xaxis=dict(title='Team', dtick=1),
