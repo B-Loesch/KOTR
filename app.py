@@ -9,9 +9,17 @@ import plotly.express as px
 
 team_names = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
 
+
+#would be nice to get the same color formatting throughout
+#but I couldn't figure out a way to use just hexcode or just RGB values sadly
+
 team_colors = {team_names[0]: (255,255,255),
-              team_names[1]: (100,0,100),
-              team_names[2]: (0,255,0)}
+              team_names[1]: (0,255,0),
+              team_names[2]: (100,0,100)}
+
+plotly_team_colors = {team_names[0]: '#FFFFFF',
+              team_names[1]: '#05FF00',
+              team_names[2]: '#C000FF'}
 
 comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thieving EXP", "Slayer EXP",
                        "Farming EXP", "Runecrafting EXP", "Hunter EXP", "Abyssal Sire", 
@@ -122,7 +130,7 @@ region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupt
 
 individual_ehp = KOTR_update.calc_individual_ehp(delta_df, ehp_df)
 individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_dict, ehp_df)
-team_region_ehp = individual_region_ehp.groupby(by = "Team").sum().transpose()
+team_region_ehp = individual_region_ehp.groupby(by = "Team").sum().transpose().sort_index()
 overall_score = KOTR_update.calc_overall_score(team_region_ehp)
 
 st.set_page_config(layout = "wide")
@@ -145,7 +153,7 @@ with tab1:
         st.dataframe(ehp_df[ehp_df["Region"] == option].drop(columns = ["Region"]), use_container_width=True)
     
 with tab2:
-    KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp)
+    KOTR_map = update_map.update_map("https://github.com/B-Loesch/KOTR/blob/main/Data/trailblazer.png?raw=true", team_region_ehp, team_colors)
     st.image(KOTR_map)
     
     st.header("Overall Score")
@@ -158,7 +166,7 @@ with tab2:
                 if team_region_ehp.loc[index].idxmax(axis = "index") == team_region_ehp.columns[i]:
                     controlled_regions.append(index)
             with col: 
-                st.metric(f":red[Team {str(overall_score.columns[i])}:]", f"{overall_score.iloc[0,i]} points", ' | '.join(controlled_regions))
+                st.metric(f"{str(overall_score.columns[i])}:", f"{overall_score.iloc[0,i]} points", ' | '.join(controlled_regions))
 
     st.header("Team region score: ")
     with st.container(height = 550, border=True):
@@ -170,7 +178,7 @@ with tab2:
         col1, col2 = st.columns(2)
         with col1:
             if selection == "All":
-                team_region_ehp.loc["Total"] = team_region_ehp.sum()
+                team_region_ehp.loc["Total"] = team_region_ehp.sort_index().sum()
                 st.dataframe(team_region_ehp.style.background_gradient(cmap = 'Blues', axis = 1), width = 500, height = 500)
             else: 
                 st.dataframe(team_region_ehp.loc[[selection],:].style.background_gradient(cmap = 'Blues', axis = 1), width = 500)
@@ -181,7 +189,7 @@ with tab2:
 
                 st.metric(f"{selection} MVP:", f"{individual_region_ehp[selection].idxmax()} - {round(individual_region_ehp[selection].max(), 2)} EHP", f"{round(maxes - seconds, 2)} hours")
         with col2:
-            fig = KOTR_update.region_score_plotly(team_region_ehp, selection, width = 600, height = 400)
+            fig = KOTR_update.region_score_plotly(team_region_ehp, selection, plotly_team_colors, width = 600, height = 400)
             st.plotly_chart(fig, theme = "streamlit")
 
 with tab3:
@@ -242,10 +250,9 @@ with tab4:
         st.dataframe(KOTR_update.add_total_row(individual_ehp))
     
 with tab5:
-    st.text("This tab is for testing purposes")
-    # test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "Suitabl3", "Biscuit", "The Maher"])
-    # st.dataframe(test_scrape)
-    
+    test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "FrogeW", "The Euxer", "Yxue", "RAGGING BOTS"])
+    st.dataframe(test_scrape)
+
 
     
     

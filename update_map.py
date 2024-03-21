@@ -3,9 +3,9 @@ import requests
 from io import BytesIO
 
 #edit the team names and colors here
-team_colors = {"Semen Demons": (255,255,255),
-              "Morytania Meatflaps": (100,0,100),
-              "Guthix Gooch": (0,255,0)}
+# team_colors = {"Semen Demons": (255,255,255),
+#               "Morytania Meatflaps": (100,0,100),
+#               "Guthix Gooch": (0,255,0)}
 
 poly_dict = {"Zeah": [],
             "Tirannwn": [],
@@ -41,7 +41,7 @@ for txt, name in zip(txt_list, name_list):
         coordinates.append((float(x), float(y)))
     poly_dict[name] = coordinates
 
-def update_map(image_url, leaderboard):
+def update_map(image_url, leaderboard, team_colors):
     try:
         response = requests.get(image_url)
         response.raise_for_status()

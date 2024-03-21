@@ -119,13 +119,17 @@ def add_total_row(df):
     df.loc["Total"] = df.sum()
     return df
 
-def region_score_plotly(team_region_ehp, selection, width, height):
+def region_score_plotly(team_region_ehp, selection, team_colors, width, height):
     #Take team_region_ehp and create multi bar plot
     region_plot = go.Figure()
 
     if selection == "All":
-        for i, col in enumerate(team_region_ehp.columns):
-            region_plot.add_trace(go.Bar(x=team_region_ehp.index[:-1], y=team_region_ehp[col], name=col))
+        for i, col in enumerate(team_region_ehp.columns.tolist()):
+            team_color = team_colors.get(col) 
+            region_plot.add_trace(go.Bar(x=team_region_ehp.index[:-1], 
+                                         y=team_region_ehp[col], 
+                                         name=col, 
+                                         marker_color = team_color))
         region_plot.update_layout(
             xaxis=dict(title='Region', dtick = 1),
             yaxis=dict(title='EHP'),
@@ -139,17 +143,23 @@ def region_score_plotly(team_region_ehp, selection, width, height):
         return(region_plot)
     else:
         data_slice = team_region_ehp.loc[selection]
-        region_plot.add_trace(go.Bar(x=team_region_ehp.columns, y=data_slice.values))
+        for col, color in team_colors.items():
+            region_plot.add_trace(go.Bar(
+                x=[col],
+                y=[data_slice[col]],
+                marker_color=color,
+                name=col))
         region_plot.update_layout(
-            xaxis=dict(title='Team', dtick = 1),
+            xaxis=dict(title='Team', dtick=1),
             yaxis=dict(title='EHP'),
             barmode='group',
             plot_bgcolor='black',
             paper_bgcolor='black',
             font=dict(color='white'),
             margin=dict(l=40, r=40, t=10, b=40),
-            width = width,
-            height = height)
+            width=width,
+            height=height
+        )
         return(region_plot)
     
     
