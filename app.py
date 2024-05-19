@@ -9,6 +9,43 @@ import plotly.express as px
 
 team_names = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
 
+name_list = ["CIicking", "Suitabl3", "yankees fan7", "gim alone", "aged whale", "The Maher", "MIND THE WAP",
+             "Cramolix", "Quinninho", "Azbirddog", "skoomadrinke", "Zalcanussy", "wimen", "Euxy", "stjonkbonk",
+             "jinxtheminxx", "smallblue0", "FarmboyFrank", "Toyo Harada", "rez", "lord uhlen", "IAmDivine", "fleshrat", 
+             "stinky metz", "plusblastbtw", "ThePoggest", "Jonte xu2", "TbowBundy", "ChikitiChina", "dwaggleim"]
+
+team1 = ['stinky metz',
+  'TbowBundy',
+  'Azbirddog',
+  'dwaggleim',
+  'The Maher',
+  'FarmboyFrank',
+  'rez',
+  'Zalcanussy',
+  'plusblastbtw',
+  'lord uhlen']
+
+team2 = ['wimen',
+  'stjonkbonk',
+  'Euxy',
+  'skoomadrinke',
+  'MIND THE WAP',
+  'Quinninho',
+  'CIicking',
+  'jinxtheminxx',
+  'ChikitaChina',
+  'Jonte xu2']
+
+team3 = ['smallblue0',
+  'Suitabl3',
+  'IAmDivine',
+  'Cramolix',
+  'yankees fan7',
+  'fleshrat',
+  'gim alone',
+  'Toyo Harada',
+  'aged whale',
+  'ThePoggest']
 
 #would be nice to get the same color formatting throughout
 #but I couldn't figure out a way to use just hexcode or just RGB values sadly
@@ -34,9 +71,10 @@ comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thi
                        "Theatre of Blood: Hard Mode", "Thermonuclear Smoke Devil", "Tombs of Amascut", "Tombs of Amascut: Expert Mode",
                        "TzKal-Zuk", "TzTok-Jad", "Vardorvis", "Venenatis", "Vet'ion", "Vorkath", "Wintertodt", "Zalcano", "Zulrah"]
 
-start_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Start.csv?token={st.secrets.tokens.start_token}").set_index("Username")
+start_df = KOTR_update.get_hiscores_data_start(name_list, comp_cols)
 
-update_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/Update.csv?token={st.secrets.tokens.update_token}").drop(columns=["Time"]).set_index("Username")
+update_df = KOTR_update.get_hiscores_data(name_list, comp_cols)
+
 
 ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token={st.secrets.tokens.ehp_token}").set_index("Category")
 
@@ -52,56 +90,56 @@ start_df = start_df[comp_cols].astype(float).replace(-1, 0)
 update_df = update_df[comp_cols].astype(float).replace(-1, 0)
 delta_df = update_df - start_df
 
-team1 = ["CmmandoSpork",
-"Dezerthuntar",
-"wha who",
-"Blazeuchija",
-"bowfabundy",
-"OJdaInnocent",
-"Lordcardhock ",
-"Jack Da Rips",
-"Doc Beeb",
-"ImMaxy",
-"Odd_mobile",
-"Jaamies97",
-"Iron My Cat",
-"smallblue0",
-"cwob",
-"Jubnon"]
+# team1 = ["CmmandoSpork",
+# "Dezerthuntar",
+# "wha who",
+# "Blazeuchija",
+# "bowfabundy",
+# "OJdaInnocent",
+# "Lordcardhock ",
+# "Jack Da Rips",
+# "Doc Beeb",
+# "ImMaxy",
+# "Odd_mobile",
+# "Jaamies97",
+# "Iron My Cat",
+# "smallblue0",
+# "cwob",
+# "Jubnon"]
 
-team2 = ["Mas3",
-"Kobenaa",
-"tits n rice",
-"ITrimGlories",
-"Yungllef",
-"Quinninho",
-"stjonkbonk",
-"WolfAndSpice",
-"Scoob x",
-"maior ratio",
-"J Mercs",
-"Kano wins",
-"Yankees fan7",
-"Boarder21",
-"goethium",
-"Chikitichina"]
+# team2 = ["Mas3",
+# "Kobenaa",
+# "tits n rice",
+# "ITrimGlories",
+# "Yungllef",
+# "Quinninho",
+# "stjonkbonk",
+# "WolfAndSpice",
+# "Scoob x",
+# "maior ratio",
+# "J Mercs",
+# "Kano wins",
+# "Yankees fan7",
+# "Boarder21",
+# "goethium",
+# "Chikitichina"]
 
-team3 = ["The Maher",
-"Dusted Yuna",
-"The 0racle",
-"Bommerche",
-"euxy",
-"MrsWllw",
-"Willowfi",
-"Suitabl3",
-"Im Folly",
-"Plssmissile",
-"Azbirddog",
-"Sonfish",
-"wimen",
-"Key Concept",
-"not2fly",
-"Dr snuggles0"]
+# team3 = ["The Maher",
+# "Dusted Yuna",
+# "The 0racle",
+# "Bommerche",
+# "euxy",
+# "MrsWllw",
+# "Willowfi",
+# "Suitabl3",
+# "Im Folly",
+# "Plssmissile",
+# "Azbirddog",
+# "Sonfish",
+# "wimen",
+# "Key Concept",
+# "not2fly",
+# "Dr snuggles0"]
 
 for name in start_df.index:
     if name in team1:
@@ -133,7 +171,7 @@ individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_
 team_region_ehp = individual_region_ehp.groupby(by = "Team").sum().transpose().sort_index()
 overall_score = KOTR_update.calc_overall_score(team_region_ehp)
 
-st.set_page_config(layout = "wide")
+# st.set_page_config(layout = "wide")
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Overview", "Main", "Team Page", "Individual Stats", "Test"])
 
@@ -250,7 +288,7 @@ with tab4:
         st.dataframe(KOTR_update.add_total_row(individual_ehp))
     
 with tab5:
-    test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "FrogeW", "The Euxer", "Yxue", "RAGGING BOTS"])
+    test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "FrogeW", "The Euxer", "Yxue", "RAGGING BOTS"], comp_cols)
     st.dataframe(test_scrape)
 
 
