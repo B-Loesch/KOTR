@@ -88,8 +88,9 @@ region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupt
 # data setup
 if "start_df" not in st.session_state:
     st.session_state.start_df = KOTR_update.get_hiscores_data_start(name_list, comp_cols)
-if "update_df" not in st.session_state:
-    st.session_state.update_df = KOTR_update.get_hiscores_data(name_list, comp_cols)
+
+st.session_state.update_df = KOTR_update.get_hiscores_data(name_list, comp_cols)
+
 if "ehp_df" not in st.session_state:
     st.session_state.ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token={st.secrets.tokens.ehp_token}").set_index("Category")
     st.session_state.ehp_df["EHP Rate"] = st.session_state.ehp_df["EHP Rate"].astype(float)
