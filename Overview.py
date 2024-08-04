@@ -256,6 +256,8 @@ with st.container(border=True):
 #     test_scrape = KOTR_update.get_hiscores_data(["Euxy", "MIND THE WAP", "FrogeW", "The Euxer", "Yxue", "RAGGING BOTS"], comp_cols)
 #     st.dataframe(test_scrape)
 
-
+st.dataframe(st.session_state.start_df)
+st.dataframe(st.session_state.update_df)
+st.dataframe(st.session_state.delta_df)
     
     
