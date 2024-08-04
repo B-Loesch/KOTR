@@ -112,14 +112,13 @@ df_2 = st.session_state.delta_df[st.session_state.delta_df["Team"] == team_names
 df_3 = st.session_state.delta_df[st.session_state.delta_df["Team"] == team_names[2]]
 df_list = [df_1, df_2, df_3]
 
-if "individual_ehp" not in st.session_state:
-    st.session_state.individual_ehp = KOTR_update.calc_individual_ehp(st.session_state.delta_df, st.session_state.ehp_df)
-if "individual_region_ehp" not in st.session_state:
-    st.session_state.individual_region_ehp = KOTR_update.calc_individual_ehp_region(st.session_state.delta_df, region_dict, st.session_state.ehp_df)
-if "team_region_ehp" not in st.session_state:
-    st.session_state.team_region_ehp = st.session_state.individual_region_ehp.groupby(by = ["Team"]).sum().transpose().sort_index()
-if "overall_score" not in st.session_state:
-    st.session_state.overall_score = KOTR_update.calc_overall_score(st.session_state.team_region_ehp)
+st.session_state.individual_ehp = KOTR_update.calc_individual_ehp(st.session_state.delta_df, st.session_state.ehp_df)
+
+st.session_state.individual_region_ehp = KOTR_update.calc_individual_ehp_region(st.session_state.delta_df, region_dict, st.session_state.ehp_df)
+
+st.session_state.team_region_ehp = st.session_state.individual_region_ehp.groupby(by = ["Team"]).sum().transpose().sort_index()
+
+st.session_state.overall_score = KOTR_update.calc_overall_score(st.session_state.team_region_ehp)
 
 ### page specific
 
