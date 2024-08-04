@@ -83,13 +83,12 @@ region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupt
 players = sorted(name_list, key = str.casefold)
 players.insert(0, "None")
 
-
-use_region_df = st.session_state.individual_region_ehp.drop(["Total",])
+use_region_df = st.session_state.individual_region_ehp#.drop(["Total",])
 use_region_df['Total'] = use_region_df.drop(columns='Team', errors='ignore').sum(axis = 1)
 use_region_df = use_region_df[["Total"] + [col for col in use_region_df.columns if col != "Total"]]
 
 
-use_individual_df = st.session_state.individual_ehp.drop(["Total",])
+use_individual_df = st.session_state.individual_ehp#.drop(["Total",])
 use_individual_df['Total'] = use_individual_df.drop(columns='Team', errors='ignore').sum(axis = 1)
 use_individual_df = use_individual_df[["Total"] + [col for col in use_individual_df.columns if col != "Total"]]
 
