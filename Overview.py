@@ -86,8 +86,7 @@ region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupt
               "Misthalin": ["Runecrafting EXP", "Abyssal Sire", "Giant Mole", "Scurrius", "The Whisperer", "The Leviathan"],
                "Asgarnia": ["Hunter EXP", "Kree'Arra", "General Graardor", "K'ril Tsutsaroth", "Nex", "Commander Zilyana"]}
 # data setup
-if "start_df" not in st.session_state:
-    st.session_state.start_df = KOTR_update.get_hiscores_data_start(name_list, comp_cols)
+start_df = pd.read_csv("https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/start_df.csv")
 
 st.session_state.update_df = KOTR_update.get_hiscores_data(name_list, comp_cols)
 
