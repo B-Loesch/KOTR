@@ -94,11 +94,11 @@ if "ehp_df" not in st.session_state:
     st.session_state.ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data/EHP.csv?token={st.secrets.tokens.ehp_token}").set_index("Category")
     st.session_state.ehp_df["EHP Rate"] = st.session_state.ehp_df["EHP Rate"].astype(float)
 
-st.session_state.start_df = st.session_state.start_df[comp_cols].astype(float).replace(-1, 0)
+# st.session_state.start_df = st.session_state.start_df[comp_cols].astype(float).replace(-1, 0)
 st.session_state.update_df = st.session_state.update_df[comp_cols].astype(float).replace(-1, 0)
-st.session_state.delta_df = (st.session_state.update_df - st.session_state.start_df).reset_index().drop_duplicates(subset='index', keep = 'first').set_index('index')
+st.session_state.delta_df = (st.session_state.update_df - start_df).reset_index().drop_duplicates(subset='index', keep = 'first').set_index('index')
 
-for name in st.session_state.start_df.index:
+for name in start_df.index:
     if name in team1:
         st.session_state.delta_df.at[name, "Team"] = team_names[0]
     elif name in team2:
