@@ -9,13 +9,13 @@ import plotly.express as px
 
 team_names = ["Semen Demons", "Guthix Gooch", "Morytania Meatflaps"]
 
-name_list = ["CIicking", "Suitabl3", "yankees fan7", "gim alone", "aged whale", "The Maher", "MIND THE WAP",
+name_list = ["Glish", "Suitabl3", "yankees fan7", "gim alone", "aged whale", "The Maher", "MIND THE WAP",
              "Cramolix", "Quinninho", "Azbirddog", "skoomadrinke", "Zalcanussy", "wimen", "Euxy", "stjonkbonk",
-             "jinxtheminxx", "smallblue0", "FarmboyFrank", "Toyo Harada", "rez", "lord uhlen", "IAmDivine", "fleshrat", 
-             "stinky metz", "plusblastbtw", "ThePoggest", "Jonte xu2", "TbowBundy", "ChikitiChina", "dwaggleim"]
+             "jinxtheminxx", "smallblue0", "Toyo Harada", "rez", "lord uhlen", "IAmDivine", "fleshrat", 
+             "stinky metz", "plusblastbtw", "ThePoggest", "Jonte xu2", "TOaBundy", "ChikitiChina", "dwaggleim"]
 
 team1 = ['stinky metz',
-  'TbowBundy',
+  'TOaBundy',
   'Azbirddog',
   'dwaggleim',
   'The Maher',
@@ -31,7 +31,7 @@ team2 = ['wimen',
   'skoomadrinke',
   'MIND THE WAP',
   'Quinninho',
-  'CIicking',
+  'Glish',
   'jinxtheminxx',
   'ChikitaChina',
   'Jonte xu2']
@@ -47,8 +47,10 @@ team3 = ['smallblue0',
   'aged whale',
   'ThePoggest']
 
+name_list = team1 + team2 + team3
+
 #would be nice to get the same color formatting throughout
-#but I couldn't figure out a way to use just hexcode or just RGB values sadly
+#but I couldn't figure out a way to use just hexcode or just RGB values
 
 team_colors = {team_names[0]: (255,255,255),
               team_names[1]: (0,255,0),
@@ -64,12 +66,23 @@ comp_cols = ["Woodcutting EXP", "Fishing EXP", "Mining EXP", "Agility EXP", "Thi
                        "Chambers of Xeric", "Chambers of Xeric: Challenge Mode", "Chaos Elemental", "Commander Zilyana", 
                        "Corporeal Beast", "Dagannoth Prime", "Dagannoth Rex", "Dagannoth Supreme",
                        "Duke Sucellus", "General Graardor", "Giant Mole", "Grotesque Guardians", 
-                       "Kalphite Queen", "King Black Dragon", "Kraken", "Kree'Arra", "K'ril Tsutsaroth", 
+                       "Kalphite Queen", "King Black Dragon", "Kraken", "Kree'Arra", "K'ril Tsutsaroth", "Lunar Chests",
                        "Nex", "Phosani's Nightmare",
-                       "Phantom Muspah", "Sarachnis", "Scorpia", "Scurrius", "Spindel", "Tempoross", 
+                       "Phantom Muspah", "Sarachnis", "Scorpia", "Scurrius", "Sol Heredit","Spindel", "Tempoross", 
                        "The Corrupted Gauntlet", "The Leviathan","The Whisperer", "Theatre of Blood", 
                        "Theatre of Blood: Hard Mode", "Thermonuclear Smoke Devil", "Tombs of Amascut", "Tombs of Amascut: Expert Mode",
                        "TzKal-Zuk", "TzTok-Jad", "Vardorvis", "Venenatis", "Vet'ion", "Vorkath", "Wintertodt", "Zalcano", "Zulrah"]
+
+region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupted Gauntlet"],
+              "Fremennik": ["Mining EXP", "Vorkath", "Phantom Muspah", "Dagannoth Prime", "Dagannoth Rex", "Dagannoth Supreme", "Duke Sucellus"],
+              "Kandarin": ["Fishing EXP", "Kraken", "Cerberus", "Thermonuclear Smoke Devil"],
+              "Morytania": ["Agility EXP", "Barrows Chests", "Grotesque Guardians", "Phosani's Nightmare", "Theatre of Blood", "Theatre of Blood: Hard Mode"],
+              "Karamja": ["Slayer EXP", "TzKal-Zuk", "TzTok-Jad"],
+              "Wilderness": ["Callisto", "Calvarion", "Corporeal Beast", "Scorpia", "Venenatis", "Vet'ion", "King Black Dragon", "Artio", "Spindel", "Chaos Elemental"],
+              "Zeah": ["Farming EXP", "Alchemical Hydra", "Chambers of Xeric", "Chambers of Xeric: Challenge Mode", "Sarachnis", "Wintertodt", "Vardorvis", "Lunar Chests", "Sol Heredit"],
+              "Desert": ["Thieving EXP", "Kalphite Queen", "Tombs of Amascut", "Tombs of Amascut: Expert Mode", "Tempoross"],
+              "Misthalin": ["Runecrafting EXP", "Abyssal Sire", "Giant Mole", "Scurrius", "The Whisperer", "The Leviathan"],
+               "Asgarnia": ["Hunter EXP", "Kree'Arra", "General Graardor", "K'ril Tsutsaroth", "Nex", "Commander Zilyana"]}
 
 start_df = KOTR_update.get_hiscores_data_start(name_list, comp_cols)
 
@@ -80,66 +93,15 @@ ehp_df = pd.read_csv(f"https://raw.githubusercontent.com/B-Loesch/KOTR/main/Data
 
 ehp_df["EHP Rate"] = ehp_df["EHP Rate"].astype(float)
 
-cols_to_add = ["Artio", "Calvarion", "Duke Sucellus", "Scurrius", "Spindel", "The Leviathan", "The Whisperer", "Vardorvis"]
-for col in cols_to_add:
-    if col not in start_df:
-        start_df[col] = 0
-        update_df[col] = 0
+# cols_to_add = ["Artio", "Calvarion", "Duke Sucellus", "Scurrius", "Spindel", "The Leviathan", "The Whisperer", "Vardorvis"]
+# for col in cols_to_add:
+#     if col not in start_df:
+#         start_df[col] = 0
+#         update_df[col] = 0
 
 start_df = start_df[comp_cols].astype(float).replace(-1, 0)
 update_df = update_df[comp_cols].astype(float).replace(-1, 0)
 delta_df = update_df - start_df
-
-# team1 = ["CmmandoSpork",
-# "Dezerthuntar",
-# "wha who",
-# "Blazeuchija",
-# "bowfabundy",
-# "OJdaInnocent",
-# "Lordcardhock ",
-# "Jack Da Rips",
-# "Doc Beeb",
-# "ImMaxy",
-# "Odd_mobile",
-# "Jaamies97",
-# "Iron My Cat",
-# "smallblue0",
-# "cwob",
-# "Jubnon"]
-
-# team2 = ["Mas3",
-# "Kobenaa",
-# "tits n rice",
-# "ITrimGlories",
-# "Yungllef",
-# "Quinninho",
-# "stjonkbonk",
-# "WolfAndSpice",
-# "Scoob x",
-# "maior ratio",
-# "J Mercs",
-# "Kano wins",
-# "Yankees fan7",
-# "Boarder21",
-# "goethium",
-# "Chikitichina"]
-
-# team3 = ["The Maher",
-# "Dusted Yuna",
-# "The 0racle",
-# "Bommerche",
-# "euxy",
-# "MrsWllw",
-# "Willowfi",
-# "Suitabl3",
-# "Im Folly",
-# "Plssmissile",
-# "Azbirddog",
-# "Sonfish",
-# "wimen",
-# "Key Concept",
-# "not2fly",
-# "Dr snuggles0"]
 
 for name in start_df.index:
     if name in team1:
@@ -154,17 +116,6 @@ df_2 = delta_df[delta_df["Team"] == team_names[1]]
 df_3 = delta_df[delta_df["Team"] == team_names[2]]
 
 df_list = [df_1, df_2, df_3]
-
-region_dict = {"Tirannwn": ["Woodcutting EXP", "Zulrah", "Zalcano", "The Corrupted Gauntlet"],
-              "Fremennik": ["Mining EXP", "Vorkath", "Phantom Muspah", "Dagannoth Prime", "Dagannoth Rex", "Dagannoth Supreme", "Duke Sucellus"],
-              "Kandarin": ["Fishing EXP", "Kraken", "Cerberus", "Thermonuclear Smoke Devil"],
-              "Morytania": ["Agility EXP", "Barrows Chests", "Grotesque Guardians", "Phosani's Nightmare", "Theatre of Blood", "Theatre of Blood: Hard Mode"],
-              "Karamja": ["Slayer EXP", "TzKal-Zuk", "TzTok-Jad"],
-              "Wilderness": ["Callisto", "Calvarion", "Corporeal Beast", "Scorpia", "Venenatis", "Vet'ion", "King Black Dragon", "Artio", "Spindel", "Chaos Elemental"],
-              "Zeah": ["Farming EXP", "Alchemical Hydra", "Chambers of Xeric", "Chambers of Xeric: Challenge Mode", "Sarachnis", "Wintertodt", "Vardorvis"],
-              "Desert": ["Thieving EXP", "Kalphite Queen", "Tombs of Amascut", "Tombs of Amascut: Expert Mode", "Tempoross"],
-              "Misthalin": ["Runecrafting EXP", "Abyssal Sire", "Giant Mole", "Scurrius", "The Whisperer", "The Leviathan"],
-               "Asgarnia": ["Hunter EXP", "Kree'Arra", "General Graardor", "K'ril Tsutsaroth", "Nex", "Commander Zilyana"]}
 
 individual_ehp = KOTR_update.calc_individual_ehp(delta_df, ehp_df)
 individual_region_ehp = KOTR_update.calc_individual_ehp_region(delta_df, region_dict, ehp_df)

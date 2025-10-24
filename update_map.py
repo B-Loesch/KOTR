@@ -52,6 +52,8 @@ def update_map(image_url, leaderboard, team_colors):
     image = Image.open(BytesIO(response.content))
     draw = ImageDraw.Draw(image, 'RGBA')
     for index, row in leaderboard.iterrows():
+        if index == "Total":
+            continue
         first = row.idxmax()
         second = row.drop(first).idxmax()
         
